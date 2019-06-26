@@ -1,0 +1,45 @@
+{% extends 'playlister/base.html' %}
+{% block title %}Playlists{% endblock %}
+{% block content %}
+
+    <div class="breadcrumb-self">
+        <div class="ui breadcrumb container">
+            <a class="section" href="#">Profile</a>
+            <div class="divider"> / </div>
+            <div class="active section">Playlists</div>
+        </div>
+    </div>
+    
+    <br>
+    <div class="ui cards container">
+        {% if all_playlists %}
+            {% for playlist in all_playlists %}
+            <div class="card">
+                <div class="content">
+                    <div class="header">
+                        <a href="{{ playlist.name }}/">{{playlist.name}}</a>
+                    </div>
+                    <div class="meta">{{playlist.mood}}</div>
+                    <div class="description">
+                        {{playlist.desc}}
+                        <br><br>
+                        <form action="{% url 'playlister:delete_playlist' playlist.id %}" method="post">
+                            {% csrf_token %}
+                            <input type="submit" class="ui button" value="delete">
+                            <a href="{% url 'playlister:edit_playlist' playlist.id %}" class="ui button">edit</a>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+            
+        {% endfor %}
+    </div>
+    <br><br><br><br><br><br><br>
+            <a href="{% url 'playlister:add_playlist' %}" class="ui button">Add Playlist</a>
+    {% else %}
+        <h1>No playlists found!</h1>
+    {% endif %}
+{% endblock %}
+
+

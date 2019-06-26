@@ -1,0 +1,31 @@
+{% extends 'playlister/base.html' %}
+{% block title %}{{current_song_name.song_name}} - Urls{% endblock %}
+{% block content %}
+    <div class="breadcrumb-self">
+        <div class="ui breadcrumb container">
+            <a class="section" href="#">Profile</a>
+            <div class="divider"> / </div>
+            <a class="section" href="#">Playlist - {{current_playlist_name.name}}</a>
+            <div class="divider"> / </div>
+            <a class="section" href="#">Song - {{current_song_name.song_name}}</a>
+            <div class="divider"> / </div>
+            <div class="active section">URLs</div>
+        </div>
+    </div>
+
+    <h3>{{current_song_name.song_name}}</h3>
+    <ul>
+        {% for url in current_song_name.songlink_set.all %}
+        <li> 
+            <a href="{{url.streaming_service_url}}">{{url.streaming_service_name}}</a>
+            <form action="{% url 'playlister:delete_url' url.id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" class="ui button" value="delete">
+                <a href="{% url 'playlister:edit_url' url.id %}" class="ui button">Edit song</a>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    <br><br><br><br><br><br><br>
+    <a href="{% url 'playlister:add_url' current_song_name.id %}" class="ui button">Add url</a>
+{% endblock %}
