@@ -7,6 +7,10 @@ app_name = 'playlister'
 urlpatterns = [
     path('', views.index, name="index"),
 
+    path('register/', views.UserFormView.as_view(), name="register"),
+
+    path('login/', views.UserLoginView, name="login"),
+
     #playlist-edit related urls
     path('add-playlist/', views.add_playlist.as_view(), name="add_playlist"),
 

@@ -1,10 +1,9 @@
 {% extends 'playlister/base.html' %}
-{% block title %}Add New Playlist{% endblock %}
+{% block title %}Register{% endblock %}
 {% block content %}
-
+    
     <div class="ui container two column grid">
         <div class="ui column">
-            
             <form action="" method="POST" class="ui form">
                 {% csrf_token %}
                 {% include 'playlister/form-template.html' %}
