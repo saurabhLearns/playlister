@@ -8,11 +8,12 @@ class UserForm (forms.ModelForm):
         fields = ['username', 'email', 'password']
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        try:
-            match = User.objects.get(email=email)
-        except User.DoesNotExist:
-            return email
-        raise forms.ValidationError('This email address is already in use.')
+        username = self.cleaned_data.get('username')
+        if email and User.objects.filter(email=email).exclude(username=username).exists():
+            raise forms.ValidationError(u'Email addresses must be unique.')
+        return email
+        
+    
 
 class UserLogin (forms.ModelForm):
     password = forms.CharField(widget = forms.PasswordInput)
