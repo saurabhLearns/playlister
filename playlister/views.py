@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.views.generic import View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Playlist, Song, SongLink
@@ -90,25 +90,14 @@ class UserFormView(View):
         if form.is_valid():
             user = form.save(commit=False)
             username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             user.set_password(password)
             user.save()
-            # user = authenticate(username = 'username', password = 'password')
-            # if user is not None:
-            #     if user.is_active:
-            #         login(request, user)
             return redirect('playlister:index')
         else:
             return render(request, self.template_name,{'form' : form})
 
-
-# def logout_user(request):
-#     logout(request)
-#     form = UserForm(request.POST or None)
-#     context = {
-#         "form": form,
-#     }
-#     return render(request, 'music/login.html', context)
 
 
 def UserLoginView(request):
@@ -123,31 +112,7 @@ def UserLoginView(request):
                 return redirect('playlister:index')
     return render(request, 'playlister/login.html')
 
-# class UserLoginView(View):
-#     form_class = forms.UserLogin
-#     template_name = 'playlister/login.html'
-    
-#     def get(self, request):
-#         form = self.form_class(None)
-#         return render(request, self.template_name,{'form' : form})
 
-#     def post(self, request):
-#         form = self.form_class(request.POST)
-#         if form.is_valid():
-#             username = form.cleaned_data['username']
-#             password = form.cleaned_data['password']
-#             user = authenticate(username = 'username', password = 'password')
-#             if user is not None:
-#                 login(request, user)
-#                 return redirect('playlister:index')
-#             else:
-#                 return render(request, self.template_name,{'form' : form})
-
-
-
-
-
-
-
-
-
+def UserLogoutView(request):
+    logout(request)
+    return render(request, 'playlister/login.html')

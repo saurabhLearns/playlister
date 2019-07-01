@@ -11,6 +11,9 @@ urlpatterns = [
 
     path('login/', views.UserLoginView, name="login"),
 
+    path('logout/', views.UserLogoutView, name="logout"),
+
+
     #playlist-edit related urls
     path('add-playlist/', views.add_playlist.as_view(), name="add_playlist"),
 

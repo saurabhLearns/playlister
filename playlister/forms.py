@@ -6,6 +6,13 @@ class UserForm (forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password']
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        try:
+            match = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return email
+        raise forms.ValidationError('This email address is already in use.')
 
 class UserLogin (forms.ModelForm):
     password = forms.CharField(widget = forms.PasswordInput)
