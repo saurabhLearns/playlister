@@ -11,6 +11,9 @@
     </div>
     
     <br>
+    {% if username %}
+        <h1 class="ui header">Welcome {{ username }}</h1>
+    {% endif %}
     <div class="ui cards container">
         {% if all_playlists %}
             {% for playlist in all_playlists %}
@@ -37,6 +40,10 @@
     </div>
     <br><br><br><br><br><br><br>
             <a href="{% url 'playlister:add_playlist' %}" class="ui button">Add Playlist</a>
+            {% if username %}
+                <a href="{% url 'playlister:logout' %}" class="ui button">logout</a>
+            {% endif %}
+            
     {% else %}
         <h1>No playlists found!</h1>
     {% endif %}

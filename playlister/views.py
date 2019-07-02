@@ -9,18 +9,30 @@ from . import forms
 #normal views
 def index(request):
     all_playlists = Playlist.objects.all()
-    return render(request, 'playlister/index.html', {'all_playlists' : all_playlists,})
+    try:
+        username = request.session['username']
+    except KeyError:
+        return render(request, 'playlister/index.html', {'all_playlists' : all_playlists,})
+    return render(request, 'playlister/index.html', {'all_playlists' : all_playlists, 'username' : username})
 
 
 def playlist(request, playlist_name):
     current_playlist_name = get_object_or_404 (Playlist, name = playlist_name)
-    return render(request, 'playlister/songs.html', {'current_playlist_name' : current_playlist_name})
+    try:
+        username = request.session['username']
+    except KeyError:
+        return render(request, 'playlister/songs.html', {'current_playlist_name' : current_playlist_name,})
+    return render(request, 'playlister/songs.html', {'current_playlist_name' : current_playlist_name, 'username' : username})
 
 
 def song(request, playlist_name, song_name):
     current_song_name = get_object_or_404(Song, song_name = song_name)
     current_playlist_name = get_object_or_404 (Playlist, name = playlist_name)
-    return render(request, 'playlister/urls.html', {'current_song_name' : current_song_name, 'current_playlist_name' : current_playlist_name})
+    try:
+        username = request.session['username']
+    except KeyError:
+        return render(request, 'playlister/urls.html', {'current_song_name' : current_song_name, 'current_playlist_name' : current_playlist_name})
+        return render(request, 'playlister/urls.html', {'current_song_name' : current_song_name, 'current_playlist_name' : current_playlist_name, 'username' : username})
 
 #playlist manipulation views
 class add_playlist(CreateView):
@@ -80,39 +92,51 @@ class edit_url(UpdateView):
 class UserFormView(View):
     form_class = forms.UserForm
     template_name = 'playlister/register.html'
-
     def get(self, request):
-        form = self.form_class(None)
-        return render(request, self.template_name,{'form' : form})
+        try:
+            username = self.request.session['username']
+            return redirect('playlister:index')
+        except KeyError:
+            form = self.form_class(None)
+            return render(request, self.template_name,{'form' : form})
 
     def post(self, request):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            username = form.cleaned_data['username']
-            email = form.cleaned_data['email']
-            password = form.cleaned_data['password']
-            user.set_password(password)
-            user.save()
+        try:
+            username = self.request.session['username']
             return redirect('playlister:index')
-        else:
-            return render(request, self.template_name,{'form' : form})
+        except KeyError:
+            form = self.form_class(request.POST)
+            if form.is_valid():
+                user = form.save(commit=False)
+                username = form.cleaned_data['username']
+                email = form.cleaned_data['email']
+                password = form.cleaned_data['password']
+                user.set_password(password)
+                user.save()
+                return redirect('playlister:index')
+            else:
+                return render(request, self.template_name,{'form' : form})
 
 
 
 def UserLoginView(request):
-    if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                #albums = Album.objects.filter(user=request.user)
-                return redirect('playlister:index')
-    return render(request, 'playlister/login.html')
+    try:
+        username = request.session['username']
+        return redirect('playlister:index')
+    except KeyError:
+        if request.method == "POST":
+            username = request.POST['username']
+            password = request.POST['password']
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    request.session['username'] = username
+                    return redirect('playlister:index')
+        return render(request, 'playlister/login.html')
 
 
 def UserLogoutView(request):
+    del request.session['username']
     logout(request)
     return render(request, 'playlister/login.html')
