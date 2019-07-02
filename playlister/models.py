@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.urls import reverse, reverse_lazy
 
 
@@ -6,7 +7,8 @@ class Playlist(models.Model):
     name = models.CharField(max_length=10)
     mood = models.CharField(max_length=10, blank = True)
     desc = models.CharField(max_length=200, blank = True)
-    
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null = True)
+
     def get_absolute_url(self):
         return reverse('playlister:index')
     def __str__(self):
@@ -19,7 +21,6 @@ class Song(models.Model):
 
     def get_absolute_url(self):
         return reverse('playlister:playlist', kwargs={'playlist_name': self.playlist.name})
-
     def __str__(self):
         return self.id
 
